@@ -1,25 +1,38 @@
 import argparse
+import logging
 import audio
 import summarization
 
+# Setup logger
+logger = logging.getLogger("dnd_summarizer")
+
 
 def parse_args(
-    input,
-    api_key,
-    processing_method="chained",
-    output_format="none",
-    output=None,
-    verbose=False,
-    dry_run=False,
+    input: list[str],
+    api_key: str,
+    processing_method: str = "chained",
+    output_format: str = "none",
+    output: str = None,
+    verbose: bool = False,
+    dry_run: bool = False,
 ):
+    # Check if verbose is set
     if verbose:
-        print(input)
-        print(api_key)
-        print(processing_method)
-        print(output_format)
-        print(output)
-        print(verbose)
-        print(dry_run)
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    # Log arguments
+    logger.debug(
+        "input: %s, api_key: %s, processing_method: %s, output_format: %s, output: %s, verbose: %s, dry_run: %s",
+        input,
+        api_key,
+        processing_method,
+        output_format,
+        output,
+        verbose,
+        dry_run,
+    )
 
 
 if __name__ == "__main__":
@@ -71,8 +84,8 @@ if __name__ == "__main__":
         """,
     )
     parser.add_argument("-o", "--output", type=str, help="The output file name")
-    parser.add_argument("-v", "--verbose", type=bool, help="Verbose mode")
-    parser.add_argument("-d", "--dry-run", type=bool, help="Dry run mode")
+    parser.add_argument("-v", "--verbose", help="Verbose mode")
+    parser.add_argument("-d", "--dry-run", help="Dry run mode")
 
     args = parser.parse_args()
 
