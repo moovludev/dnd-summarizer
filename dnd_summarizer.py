@@ -8,13 +8,14 @@ logger = logging.getLogger("dnd_summarizer")
 
 
 def parse_args(
-    input: list[str],
+    input_file: list[str],
     api_key: str,
     processing_method: str = "chained",
-    output_format: str = "none",
+    output_format: list[str] | str = "none",
     output: str = None,
     verbose: bool = False,
     dry_run: bool = False,
+    allow_dots: bool = False
 ):
     # Check if verbose is set
     if verbose:
@@ -24,26 +25,38 @@ def parse_args(
 
     # Log arguments
     logger.debug(
-        "input: %s, api_key: %s, processing_method: %s, output_format: %s, output: %s, verbose: %s, dry_run: %s",
-        input,
+        "input: %s, api_key: %s, processing_method: %s, output_format: %s, output: %s, verbose: %s, dry_run: %s, allow_dots %s",
+        input_file,
         api_key,
         processing_method,
         output_format,
         output,
         verbose,
         dry_run,
+        allow_dots
     )
 
+    # Validate inputs
+    if len(input_file) > 1:
+        if len(input_file) % 2 == 1:
+            raise ValueError("Recieved multiple arguments with missing alias, please provide an alias proceeding each file.")
+        if not allow_dots:
+            for i in input_file[1::2]:
+                if "." in i:
+                    raise ValueError(f"Alias {i} contains '.', please provide an alias to each inputted file, or if this is expected, append the -D flag.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="", description="", epilog="")
+    parser = argparse.ArgumentParser(
+        prog="Dnd Summarizer",
+        description="A program that takes an audio file, transcribes it, and summarizes it using OpenAI's API.",
+    )
     # Set program arguments and parse
     parser.add_argument(
         "-i",
         "--input",
         type=str,
         required=True,
-        nargs="*",
+        nargs="+",
         action="append",
         metavar=("FILE", "ALIAS"),
         help="""
@@ -70,7 +83,7 @@ if __name__ == "__main__":
         "-f",
         "--output-format",
         type=str,
-        nargs="*",
+        nargs="+",
         action="append",
         metavar=("FORMAT", "PROMPT"),
         help="""
@@ -84,17 +97,20 @@ if __name__ == "__main__":
         """,
     )
     parser.add_argument("-o", "--output", type=str, help="The output file name")
-    parser.add_argument("-v", "--verbose", help="Verbose mode")
-    parser.add_argument("-d", "--dry-run", help="Dry run mode")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose mode")
+    parser.add_argument("-d", "--dry-run", action="store_true", help="Dry run mode")
+    parser.add_argument("-D", "--allow-dots", action="store_true",
+                    help="Allow periods in aliases (normally disallowed to avoid filename confusion)")
 
     args = parser.parse_args()
 
     parse_args(
-        args.input,
+        args.input[0],
         args.api_key,
         args.processing_method,
         args.output_format,
         args.output,
         args.verbose,
         args.dry_run,
+        args.allow_dots
     )
