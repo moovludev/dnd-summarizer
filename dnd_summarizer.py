@@ -1,6 +1,6 @@
 import argparse
 import logging
-import audio
+import audio_transcription
 import summarization
 
 # Setup logger
