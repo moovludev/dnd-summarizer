@@ -9,4 +9,3 @@ class OpenAiClient:
     
     def transcribe_text(self):
         raise NotImplementedError
-    

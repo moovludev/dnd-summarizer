@@ -1,11 +1,10 @@
 import argparse
 import logging
-import audio_transcription
-import summarization
+import dnd_summarizer.transcription
+import dnd_summarizer.summarization
 
 # Setup logger
 logger = logging.getLogger("dnd_summarizer")
-
 
 def parse_args(
     input_file: list[str],
@@ -44,6 +43,7 @@ def parse_args(
             for i in input_file[1::2]:
                 if "." in i:
                     raise ValueError(f"Alias {i} contains '.', please provide an alias to each inputted file, or if this is expected, append the -D flag.")
+                
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
