@@ -1,10 +1,14 @@
+"""
+The CLI entrypoint for this program. Captures, and validates CLI inputs.
+"""
 import argparse
 import logging
-import dnd_summarizer.transcription
-import dnd_summarizer.summarization
+import dnd_summarizer.audio as audio
+import dnd_summarizer.summarization as summarize
+import dnd_summarizer.transcription as transcribe
 
 # Setup logger
-logger = logging.getLogger("dnd_summarizer")
+logger = logging.getLogger("dnd_summarizer-cli")
 
 def parse_args(
     input_file: list[str],
@@ -44,6 +48,9 @@ def parse_args(
                 if "." in i:
                     raise ValueError(f"Alias {i} contains '.', please provide an alias to each inputted file, or if this is expected, append the -D flag.")
                 
+    # Create OpenAI instance and transcribe file
+    client = transcribe.OpenAiClient(api_key)
+    audio.transcribe_file(client, input_file)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
