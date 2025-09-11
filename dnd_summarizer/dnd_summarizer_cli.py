@@ -3,9 +3,9 @@ The CLI entrypoint for this program. Captures, and validates CLI inputs.
 """
 import argparse
 import logging
-import dnd_summarizer.audio as audio
-import dnd_summarizer.summarization as summarize
-import dnd_summarizer.transcription as transcribe
+from dnd_summarizer import audio
+from dnd_summarizer import summarization as summarize
+from dnd_summarizer import transcription as transcribe
 
 # Setup logger
 logger = logging.getLogger("dnd_summarizer-cli")
